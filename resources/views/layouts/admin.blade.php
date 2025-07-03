@@ -64,11 +64,11 @@
         </div>
             <h4>Vaccination</h4>
         <a href="#">🗺️ Statistique</a>
-        <a href="#">Enfant de chaque secteurs</a>
-        
-        <a href="#">🔔 Notifications</a>
+        <a href="#">   Enfant de chaque secteurs</a>
+        <a href="#">    Liste de vaccination de chaque secteur pour chaque tranche d’age</a>
         <a href="#">👤 Profile</a>
         <a href="#">👥 Gestion des utilisateurs</a>
+        <a href="#">    Liste secteurs</a> 
         <form method="POST" action="{{ route('logout') }}" class="logout-btn">
             @csrf
             <button type="submit" class="btn btn-light w-100">Se déconnecter</button>
