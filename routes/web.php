@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginRedirectController;
 use Livewire\Volt\Volt;
-
+use App\Http\Controllers\Admin\EnfantStatistiqueController;
 require __DIR__.'/auth.php';
 
 // Route d'accueil redirige vers le bon dashboard selon le rôle
@@ -41,5 +41,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
     return redirect()->route('redirect');
     })->middleware(['auth'])->name('dashboard');
-
+   
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/enfants-statistiques', [EnfantStatistiqueController::class, 'create'])->name('enfants.create');
+    Route::post('/admin/enfants-statistiques', [EnfantStatistiqueController::class, 'store'])->name('enfants.store');
 });
