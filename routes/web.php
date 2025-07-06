@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginRedirectController;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\Admin\EnfantStatistiqueController;
+use App\Http\Controllers\Admin\SecteurController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\User\UserDashboardController;
+use App\Http\Controllers\User\VaccinStatistiqueController;
 require __DIR__.'/auth.php';
 
 // Route d'accueil redirige vers le bon dashboard selon le rôle
@@ -45,5 +51,31 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/enfants-statistiques', [EnfantStatistiqueController::class, 'create'])->name('enfants.create');
-    Route::post('/admin/enfants-statistiques', [EnfantStatistiqueController::class, 'store'])->name('enfants.store');
+    Route::post('/admin/enfants-statistiques', [EnfantStatistiqueController::class, 'storeMultiple'])->name('enfants.storeMultiple');
+});
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('secteurs', SecteurController::class)->except(['show', 'edit', 'update']);
+});
+Route::middleware(['auth'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('users', UserController::class)->except(['show', 'edit', 'update']);
+});
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+});
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard/user', [UserDashboardController::class, 'index'])->name('dashboard.user');
+});
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard/user', [UserDashboardController::class, 'index'])->name('dashboard.user');
+    Route::get('/user/enfants-par-age/{annee}', [UserDashboardController::class, 'getStatsByAnnee']);
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/vaccins/create', [VaccinStatistiqueController::class, 'create'])->name('user.vaccins.create');
+    Route::post('/user/vaccins/store', [VaccinStatistiqueController::class, 'store'])->name('user.vaccins.store');
 });

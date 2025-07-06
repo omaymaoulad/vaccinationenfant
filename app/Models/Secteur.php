@@ -17,4 +17,7 @@ class Secteur extends Model
     public function vaccinstatiques(){
         return $this->hasMany(VaccinStatistique::class, 'id_secteur');
     }
+    public function users(){
+        return $this->hasMany(User::class);
+    }
 }

@@ -15,25 +15,28 @@ class EnfantStatistiqueController extends Controller
         return view('admin.enfants_statistiques.create', compact('secteurs'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'id_secteur' => 'required|exists:secteurs,id',
-            'annee' => 'required|integer',
-            'nb_moins_1_an' => 'required|integer',
-            'nb_18_mois' => 'required|integer',
-            'nb_5_ans' => 'required|integer',
-        ]);
-         $exists = EnfantStatistique::where('id_secteur', $request->id_secteur)
-        ->where('annee', $request->annee)
-        ->exists();
+    public function storeMultiple(Request $request)
+{
+    $annee = $request->input('annee');
+    $data = $request->input('data');
+
+    foreach ($data as $row) {
+        $exists = EnfantStatistique::where('id_secteur', $row['id_secteur'])
+            ->where('annee', $annee)
+            ->exists();
 
         if ($exists) {
-            return redirect()->back()->withErrors([
-                'duplicate' => 'Les données pour ce secteur et cette année existent déjà.',
+            return redirect()->back()->withErrors(['duplicate' => 'Des données pour un secteur et une année existent déjà.']);
+        }
+
+        EnfantStatistique::create([
+            'id_secteur' => $row['id_secteur'],
+            'annee' => $annee,
+            'nb_moins_1_an' => $row['nb_moins_1_an'],
+            'nb_18_mois' => $row['nb_18_mois'],
+            'nb_5_ans' => $row['nb_5_ans'],
         ]);
     }
-        EnfantStatistique::create($request->all());
 
         return redirect()->back()->with('success', 'Données enregistrées avec succès.');
     }

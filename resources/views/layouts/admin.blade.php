@@ -9,14 +9,16 @@
             display: flex;
             min-height: 100vh;
         }
-
+        .bg-side{
+           background: #da22ff;
+        }
         .sidebar {
             width: 250px;
             background: linear-gradient(180deg, #da22ff, #9733ee);
             color: white;
             padding: 20px;
         }
-
+   
         .sidebar h4 {
             font-weight: bold;
             margin-bottom: 30px;
@@ -67,9 +69,9 @@
         <a href="#">📊 Statistiques</a>
         <a href="{{ route('enfants.create') }}">👶 Enfants par secteur</a>
         <a href="#">💉 Liste de vaccination</a>
-        <a href="#">👤 Profil</a>
-        <a href="#">👥 Utilisateurs</a>
-        <a href="#">🗺️ Liste des secteurs</a>
+        <a href="{{ route('admin.profile') }}">👤 Profil</a>
+        <a href="{{route('admin.users.index')}}">👥 Utilisateurs</a>
+        <a href="{{route('admin.secteurs.index')}}">📚 Liste des secteurs</a>
         <form method="POST" action="{{ route('logout') }}" class="logout-btn">
             @csrf
             <button type="submit" class="btn btn-light w-100">Se déconnecter</button>
