@@ -7,9 +7,10 @@ use App\Http\Controllers\Admin\EnfantStatistiqueController;
 use App\Http\Controllers\Admin\SecteurController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\VaccinStatistiqueController;
+use App\Http\Controllers\User\ProfileController as UserProfileController;
 require __DIR__.'/auth.php';
 
 // Route d'accueil redirige vers le bon dashboard selon le rôle
@@ -64,9 +65,9 @@ Route::middleware(['auth'])
         Route::resource('users', UserController::class)->except(['show', 'edit', 'update']);
 });
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile');
+    Route::post('/profile', [AdminProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/user', [UserDashboardController::class, 'index'])->name('dashboard.user');
@@ -78,4 +79,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/vaccins/create', [VaccinStatistiqueController::class, 'create'])->name('user.vaccins.create');
     Route::post('/user/vaccins/store', [VaccinStatistiqueController::class, 'store'])->name('user.vaccins.store');
+});
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile');
+    Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });

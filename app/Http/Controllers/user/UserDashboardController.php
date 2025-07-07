@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Secteur;
 use App\Models\EnfantStatistique;
 use App\Models\VaccinStatistique;
-
+use Illuminate\Support\Facades\DB;
 class UserDashboardController extends Controller
 {
     public function index()
@@ -23,12 +23,23 @@ class UserDashboardController extends Controller
         $cetteSemaine = VaccinStatistique::where('id_secteur', $secteur->id)
                             ->where('semaine', $currentSemaine)
                             ->sum('enfants_vaccines');
-
+        $annee = request('annee') ?? date('Y');
         // Historique des 5 dernières semaines
-        $historique = VaccinStatistique::where('id_secteur', $secteur->id)
-                            ->orderByDesc('semaine')
-                            ->take(5)
-                            ->get();
+        $historiqueParAge = VaccinStatistique::where('id_secteur', $secteur->id)
+                                ->where('annee', $annee)
+                                ->select(['semaine',
+        DB::raw("SUM(CASE WHEN tranche_age = '-1an' THEN enfants_vaccines ELSE 0 END) as vaccines_m1"),
+        DB::raw("SUM(CASE WHEN tranche_age = '18mois' THEN enfants_vaccines ELSE 0 END) as vaccines_18"),
+        DB::raw("SUM(CASE WHEN tranche_age = '5ans' THEN enfants_vaccines ELSE 0 END) as vaccines_5"),
+
+        DB::raw("SUM(CASE WHEN tranche_age = '-1an' THEN enfants_cibles ELSE 0 END) as cibles_m1"),
+        DB::raw("SUM(CASE WHEN tranche_age = '18mois' THEN enfants_cibles ELSE 0 END) as cibles_18"),
+        DB::raw("SUM(CASE WHEN tranche_age = '5ans' THEN enfants_cibles ELSE 0 END) as cibles_5"),
+    ])
+        ->groupBy('semaine')
+        ->orderByDesc('semaine')
+        ->take(5)
+        ->get();
 
         $annee = request('annee') ?? date('Y');
 
@@ -46,7 +57,7 @@ class UserDashboardController extends Controller
         'secteur',
         'cetteSemaine',
         'currentSemaine',
-        'historique',
+        'historiqueParAge',
         'annee',
         'enfantsStats',
         'anneesDisponibles'

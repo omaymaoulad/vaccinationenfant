@@ -63,9 +63,11 @@
             <img src="{{ asset('images/sidebar.png') }}" alt="Profil" width="100" height="100" class="rounded-circle">
         </div>
             <h4>Vaccination</h4>
-        <a href="{{ route('dashboard.user') }}">🏠Acceuil</a>
-        <a href="{{route('user.vaccins.create')}}">🗃️ Données à ajouter </a>
-        <a href="#">👤 Profile</a>
+        @if(auth()->user()->role === 'user')
+            <a href="{{ route('dashboard.user') }}">🏠Acceuil</a>
+            <a href="{{route('user.vaccins.create')}}">🗃️ Données à ajouter </a>
+            <a href="{{route('user.profile')}}">👤 Profile</a>
+        @endif
         <form method="POST" action="{{ route('logout') }}" class="logout-btn">
             @csrf
             <button type="submit" class="btn btn-light w-100">Se déconnecter</button>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.user')
 
 @section('content')
 <style>
@@ -41,7 +41,7 @@
             <div class="card card-animated text-white bg-info">
                 <div class="card-body">
                     <h5 class="card-title">Ajouter des données</h5>
-                    <a href="#" class="btn btn-light">Ajouter</a>
+                    <a href="{{route('user.vaccins.create')}}" class="btn btn-light">Ajouter</a>
                 </div>
             </div>
         </div>
@@ -87,34 +87,43 @@
 </div>
     <!-- Historique -->
     <div class="card mt-4 card-animated">
-        <div class="card-header">Historique des 5 dernières semaines</div>
-        <div class="card-body">
-            <table class="table table-bordered table-sm">
-                <thead>
+    <div class="card-header bg-info text-white">Pourcentage de vaccination par tranche d'âge (5 dernières semaines)</div>
+    <div class="card-body">
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Semaine</th>
+                    <th>-1 an (%)</th>
+                    <th>18 mois (%)</th>
+                    <th>5 ans (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($historiqueParAge as $item)
                     <tr>
-                        <th>Semaine</th>
-                        <th>Vaccinés</th>
-                        <th>Cibles</th>
-                        <th>%</th>
+                        <td>{{ $item->semaine }}</td>
+                        <td>
+                            @php
+                                $p1 = $item->cibles_m1 ? round($item->vaccines_m1 / $item->cibles_m1 * 100, 2) : 0;
+                            @endphp
+                            {{ $p1 }} %
+                        </td>
+                        <td>
+                            @php
+                                $p18 = $item->cibles_18 ? round($item->vaccines_18 / $item->cibles_18 * 100, 2) : 0;
+                            @endphp
+                            {{ $p18 }} %
+                        </td>
+                        <td>
+                            @php
+                                $p5 = $item->cibles_5 ? round($item->vaccines_5 / $item->cibles_5 * 100, 2) : 0;
+                            @endphp
+                            {{ $p5 }} %
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach($historique as $item)
-                        <tr>
-                            <td>{{ $item->semaine }}</td>
-                            <td>{{ $item->enfants_vaccines }}</td>
-                            <td>{{ $item->enfants_cibles }}</td>
-                            <td>
-                                @php
-                                    $pourcentage = $item->enfants_cibles ? round(($item->enfants_vaccines / $item->enfants_cibles) * 100, 2) : 0;
-                                @endphp
-                                {{ $pourcentage }} %
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
 <script>
