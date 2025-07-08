@@ -1,38 +1,27 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-# Installer les dépendances système
+# Installer les extensions PHP requises
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    unzip \
-    zip \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl
+    zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo_mysql zip mbstring exif pcntl
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Définir le répertoire de travail
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copier tous les fichiers du projet
+# Copier les fichiers Laravel
 COPY . .
 
 # Installer les dépendances Laravel
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --optimize-autoloader --no-dev
 
-# Donner les bons droits aux fichiers Laravel
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage
+# Droits d'accès corrects
+RUN chmod -R 755 storage bootstrap/cache
 
-# Exposer le port utilisé par Laravel (via Artisan serve ou Nginx si ajouté)
-EXPOSE 8000
+# Ajouter le server.php
+COPY server.php .
 
-# Lancer Laravel avec le serveur interne PHP
-CMD php artisan serve --host=0.0.0.0 --port=8000
+EXPOSE 8080
+
+CMD ["php", "server.php"]
