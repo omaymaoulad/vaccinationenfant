@@ -28,7 +28,7 @@ Route::get('/home', function () {
     return redirect()->route('redirect');
 })->name('home');
 
-// Dashboards spécifiques
+
 Route::view('/dashboard/admin', 'dashboard.admin')
     ->middleware(['auth'])
     ->name('dashboard.admin');
