@@ -85,3 +85,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
+
+Route::get('/test', function () {
+    return view('welcome');
+});
