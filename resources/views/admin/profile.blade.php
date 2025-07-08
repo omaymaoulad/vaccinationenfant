@@ -8,9 +8,13 @@
         <div class="col-md-4">
             <div class="card ">
                 <div class="card-body text-center">
-                    <img src="{{ asset('images/profil.jpg') }}" width="100" height="100" class="rounded-circle mb-3" alt="Photo">
-                    <h5 class="card-title">{{ $user->name }}</h5>
-                    <p class="text-muted">{{ $user->email }}</p>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center">
+                            <img src="{{ asset('images/profil.jpg') }}" width="100" height="100" class="rounded-circle mb-3" alt="Photo">
+                        </div>
+                        <h5 class="card-title">{{ $user->name }}</h5>
+                        <p class="text-muted">{{ $user->email }}</p>
+                    </div>
                 </div>
             </div>
         </div>
