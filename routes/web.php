@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\User\VaccinStatistiqueController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
+use App\Http\Controllers\Admin\AdminStatistiqueController;
 require __DIR__.'/auth.php';
 
 // Route d'accueil redirige vers le bon dashboard selon le rôle
@@ -85,4 +86,6 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
-
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
+    Route::get('/statistiques-globales',[AdminStatistiqueController::class,'index'])->name('stats.globales');
+});
