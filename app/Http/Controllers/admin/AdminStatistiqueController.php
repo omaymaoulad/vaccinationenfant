@@ -47,6 +47,9 @@ foreach ($records as $vaccin => &$tranches) {
     } else {
         $tranches = array_filter($tranches, fn($key) => in_array($key, ['-1an', '-1 an', '<1 an', '18 mois', '18mois']), ARRAY_FILTER_USE_KEY);
     }
+    if($vaccin === 'Rappel 1'){
+        $tranches = array_filter($tranches, fn($key) => in_array($key, ['18 mois', '18mois']), ARRAY_FILTER_USE_KEY);
+    }
 }
 
     

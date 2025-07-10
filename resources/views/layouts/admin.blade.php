@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>@yield('title', 'Application Vaccination')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <style>
         body {
             display: flex;
@@ -67,7 +68,7 @@
         </div>
             <h4>Vaccination</h4>
         <a href="{{ route('dashboard.admin') }}">🏠Acceuil</a>
-        <a href="#">📊 Statistiques</a>
+        <a href="{{ route('admin.stats.charts')}}">📊 Statistiques</a>
         <a href="{{ route('enfants.create') }}">👶 Enfants par secteur</a>
         <a href="{{route('admin.stats.globales')}}">💉 Liste de vaccination</a>
         <a href="{{route('admin.users.index')}}">👥 Utilisateurs</a>
@@ -82,6 +83,7 @@
     <div class="content">
         @yield('content')
     </div>
-
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+       @yield('scripts')
 </body>
 </html>
