@@ -39,16 +39,23 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><strong>Hep.B – Enfants nés</strong></td>
+                    <td colspan="{{ count($tranches) }}">
+                        <input type="number" min="0" class="form-control" name="enfants_nes[Hep.B]">
+                    </td>
+                </tr>
                 @foreach($vaccins as $vaccin)
-                    <tr>
-                        <td><strong>{{ $vaccin }}</strong></td>
-                        @foreach($tranches as $tranche)
-                            <td>
-                                <input type="number" min="0" class="form-control"
-                                    name="data[{{ $vaccin }}][{{ $tranche }}]">
-                            </td>
-                        @endforeach
-                    </tr>
+                    @if($vaccin !== 'Hep.B')
+                        <tr>
+                            <td><strong>{{ $vaccin }}</strong></td>
+                            @foreach($tranches as $tranche)
+                                <td>
+                                    <input type="number" min="0" class="form-control" name="data[{{ $vaccin }}][{{ $tranche }}]">
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>

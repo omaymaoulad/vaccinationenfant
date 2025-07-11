@@ -11,7 +11,7 @@ class ChartsController extends Controller
 {
     public function index(Request $request){
         $anneeChoisie = $request ->input('annee',date('Y'));
-        $dernieresAnnees = range(date('Y'), date('Y')- 5);
+        $dernieresAnnees = range(date('Y'), date('Y')+ 5);
         //Vaccinés vaccin par année:
         $parVaccinParAnnee = VaccinStatistique::selectRaw('annee, nom_vaccin, SUM(enfants_vaccines) as total')
             ->whereIn('annee', $dernieresAnnees)
@@ -43,26 +43,36 @@ class ChartsController extends Controller
             ->get()
             ->groupBy('nom_vaccin');
         //mensuelle
-        $vaccinesParMois = VaccinStatistique::selectRaw("
-                CEIL(semaine /4) as mois,
-                SUM(enfants_vaccines) as total_vax
-            ")
-            ->where('annee' , $anneeChoisie)
-            ->groupBy('mois')
-            ->pluck('total_vax','mois');
-        $cibles = EnfantStatistique::where('annee', $anneeChoisie)->sum(DB::raw('nb_moins_1_an + nb_18_mois + nb_5_ans'));
-        $pourcentageMensuel = [];
-        foreach(range(1,12) as $mois){
-            $vaccines = $vaccinesParMois[$mois] ?? 0 ;
-            $pourcentageMensuel[$mois] = $cibles > 0 ? round(($vaccines/$cibles)* 100,2) :0;
-        }    
+        $totalCibles = EnfantStatistique::where('annee',$anneeChoisie)
+            ->sum(DB::raw('nb_moins_1_an','nb_18_mois','nb_12_mois','nb_5_ans'));
+        $cibleCumul = [];
+        $vaccins = ['Penta1','Penta3','RR'];
+        $dataCumul = [];
+        for($m = 1 ; $m <= 12 ;$m++){
+            $cibleCumul[] = round(($totalCibles /12)* $m);
+        }
+        foreach($vaccins as $vaccin){
+            $mensuel= VaccinStatistique::selectRaw("CEIL(semaine / 4) as mois, SUM(enfants_vaccines) as total")
+                ->where('nom_vaccin',$vaccin)
+                ->where('annee',$anneeChoisie)
+                ->groupBy('mois')
+                ->pluck('total','mois');
+            $cumul=0;
+            for($m =1; $m<= 12 ; $m++){
+                $cumul += $mensuel[$m] ?? 0;
+                $dataCumul[$vaccin][] = $cumul;
+            }
+        }
+
         return view('admin.stats.charts',[
             'anneeChoisie'=> $anneeChoisie,
             'annees' => $dernieresAnnees,
             'parVaccinParAnnee' => $parVaccinParAnnee,
             'parSemestre' => $parSemestre,
             'parTrimestre' =>$parTrimestre,
-            'pourcentageMensuel' =>$pourcentageMensuel,
+            'cibleCumul' => $cibleCumul,
+            'dataCumul' =>$dataCumul,
+            'totalCibles' => $totalCibles  
         ]);
     }
 }

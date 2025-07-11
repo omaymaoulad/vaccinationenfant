@@ -22,7 +22,9 @@
             <thead class="table-info">
                 <tr>
                     <th>Secteur</th>
+                    <th>naissances_attendues</th>
                     <th>Moins de 1 an</th>
+                    <th>nb_12_mois</th>
                     <th>18 mois</th>
                     <th>5 ans</th>
                 </tr>
@@ -34,7 +36,9 @@
                             {{ $secteur->nom }}
                             <input type="hidden" name="data[{{ $index }}][id_secteur]" value="{{ $secteur->id }}">
                         </td>
+                        <td><input type="number" name="data[{{ $index }}][naissances_attendues]" class="form-control" required></td>
                         <td><input type="number" name="data[{{ $index }}][nb_moins_1_an]" class="form-control" required></td>
+                        <td><input type="number" name="data[{{ $index }}][nb_12_mois]" class="form-control" required></td>
                         <td><input type="number" name="data[{{ $index }}][nb_18_mois]" class="form-control" required></td>
                         <td><input type="number" name="data[{{ $index }}][nb_5_ans]" class="form-control" required></td>
                     </tr>

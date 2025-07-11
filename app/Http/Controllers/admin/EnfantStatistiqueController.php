@@ -32,7 +32,9 @@ class EnfantStatistiqueController extends Controller
         EnfantStatistique::create([
             'id_secteur' => $row['id_secteur'],
             'annee' => $annee,
+            'naissances_attendues' => $row['naissances_attendues'],
             'nb_moins_1_an' => $row['nb_moins_1_an'],
+            'nb_12_mois' => $row['nb_12_mois'],
             'nb_18_mois' => $row['nb_18_mois'],
             'nb_5_ans' => $row['nb_5_ans'],
         ]);

@@ -7,7 +7,7 @@
         <div class="col-md-8">
             <label for="annee">Année</label>
             <select name="annee" id="annee" class="form-control">
-                @foreach(range(date('Y'), date('Y') - 5) as $year)
+                @foreach(range(date('Y'), date('Y') + 5) as $year)
                     <option value="{{ $year }}" {{ request('annee') == $year ? 'selected' : '' }}>{{ $year }}</option>
                 @endforeach
             </select>
@@ -143,22 +143,66 @@ window.onload = function () {
             labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
             datasets: [{
                 label: '% de couverture vaccinale',
-                data: @json(array_values($pourcentageMensuel)),
+                data: @json($cibleCumul),
+                borderColor: 'black',
+                borderWidth: 3,
                 fill: false,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Penta1',
+                data: @json($dataCumul['Penta1'] ?? []),
                 borderColor: 'blue',
-                tension: 0.1
-            }]
+                borderWidth: 2,
+                fill: false,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Penta3',
+                data: @json($dataCumul['Penta3'] ?? []),
+                borderColor: 'red',
+                borderWidth: 2,
+                fill: false,
+                yAxisID: 'y'
+            },
+            {
+                label: 'RR',
+                data: @json($dataCumul['RR'] ?? []),
+                borderColor: 'green',
+                borderWidth: 2,
+                fill: false,
+                yAxisID: 'y'
+            }
+
+        ]
         },
         options: {
             responsive: true,
             scales: {
                 y: {
+                    type: 'linear',
+                    position: 'left',
+                    min: 0,
+                    max: {{$totalCibles}},
+                    title: {
+                        display: true,
+                        text: 'Population cible'
+                    },
+                    ticks: {
+                        stepSize:Math.ceil({{$totalCibles}} /10)
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
                     min: 0,
                     max: 100,
-                    ticks: {
-                        callback: function(value) {
-                            return value + '%';
-                        }
+                    title: {
+                        display: true,
+                        text: 'Pourcentage (%)'
+                    },
+                    grid: {
+                        drawOnChartArea: false
                     }
                 }
             }

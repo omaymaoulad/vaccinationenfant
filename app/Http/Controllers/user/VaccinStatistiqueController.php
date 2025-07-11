@@ -13,9 +13,10 @@ class VaccinStatistiqueController extends Controller
     {
         $user = Auth::user();
         $secteur = $user->secteur;
-        $vaccins = ['BCG', 'Penta1', 'Penta2', 'Penta3', 'Rotavirus 2 doses', 'Rotavirus 3 doses', 'RR','Rappel 1','Rappel 2']; // Ajoute les vrais noms
-        $tranches = ['-1an', '18mois', '5ans'];
-        $annees = range(date('Y'), date('Y') - 5);
+        $enfantsNes = $request->enfants_nés ?? [];
+        $vaccins = ['Hep.B','BCG','VPI', 'Penta1', 'Penta2', 'Penta3', 'Rotavirus 3 doses','VPC13', 'RR','Rappel 1','Rappel 2']; // Ajoute les vrais noms
+        $tranches = ['0-11mois', '12-59mois','18mois' ,'5ans'];
+        $annees = range(date('Y'), date('Y') + 5);
 
         return view('user.vaccins.create', compact('vaccins', 'tranches', 'annees', 'secteur'));
     }
@@ -48,10 +49,10 @@ class VaccinStatistiqueController extends Controller
 
                 $cibles = 0;
                 if ($stats) {
-                    $colMap = ['-1an' => 'nb_moins_1_an', '18mois' => 'nb_18_mois', '5ans' => 'nb_5_ans'];
+                    $colMap = ['0-11mois' => 'nb_moins_1_an','12-59mois' => 'nb_12_mois', '18mois' => 'nb_18_mois', '5ans' => 'nb_5_ans'];
                     $cibles = $stats->{$colMap[$tranche]} ?? 0;
                 }
-
+                $nes = $enfantsNes[$vaccin] ?? null;
                 VaccinStatistique::create([
                     'id_secteur' => $secteurId,
                     'annee' => $annee,
@@ -60,6 +61,7 @@ class VaccinStatistiqueController extends Controller
                     'tranche_age' => $tranche,
                     'enfants_cibles' => $cibles,
                     'enfants_vaccines' => $vaccines,
+                    'enfants_nes' => $nes,
                     'pourcentage_vaccination' => $cibles > 0 ? round(($vaccines / $cibles) * 100, 2) : 0,
                 ]);
             }

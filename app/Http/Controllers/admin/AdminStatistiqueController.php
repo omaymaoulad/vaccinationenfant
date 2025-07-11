@@ -44,17 +44,17 @@ class AdminStatistiqueController extends Controller
 foreach ($records as $vaccin => &$tranches) {
     if ($vaccin === 'Rappel 2') {
         $tranches = array_filter($tranches, fn($key) => in_array($key, ['5ans', '5 ans']), ARRAY_FILTER_USE_KEY);
-    } else {
-        $tranches = array_filter($tranches, fn($key) => in_array($key, ['-1an', '-1 an', '<1 an', '18 mois', '18mois']), ARRAY_FILTER_USE_KEY);
-    }
-    if($vaccin === 'Rappel 1'){
+    } elseif ($vaccin === 'Rappel 1') {
         $tranches = array_filter($tranches, fn($key) => in_array($key, ['18 mois', '18mois']), ARRAY_FILTER_USE_KEY);
+    } else {
+        $tranches = array_filter($tranches, fn($key) => in_array($key, ['0-11mois', '0-11 mois', '12-59mois', '12-59 mois']), ARRAY_FILTER_USE_KEY);
     }
 }
 
     
     $ciblesParTranche = [
-        '<1 an' => 0,
+        '0-11mois' => 0,
+        '12-59mois' => 0,
         '18 mois' => 0,
         '5 ans' => 0,
     ];
@@ -63,7 +63,8 @@ foreach ($records as $vaccin => &$tranches) {
         $stat = EnfantStatistique::where('annee', $annee)->where('id_secteur', $secteur_id)->first();
         if ($stat) {
             $ciblesParTranche = [
-                '<1 an' => $stat->nb_moins_1_an,
+                '0-11mois' => $stat->nb_moins_1_an,
+                '12-59mois' => $stat->nb_12_mois,
                 '18 mois' => $stat->nb_18_mois,
                 '5 ans' => $stat->nb_5_ans,
             ];

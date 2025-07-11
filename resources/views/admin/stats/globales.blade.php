@@ -9,7 +9,7 @@
         <div class="col-md-3">
             <label for="annee">Année</label>
             <select name="annee" id="annee" class="form-control">
-                @foreach(range(date('Y'), date('Y') - 5) as $year)
+                @foreach(range(date('Y'), date('Y') + 5) as $year)
                     <option value="{{ $year }}" {{ request('annee') == $year ? 'selected' : '' }}>{{ $year }}</option>
                 @endforeach
             </select>
@@ -42,7 +42,8 @@
     @if(isset($ciblesParTranche))
         <div class="alert alert-info">
             <strong>Enfants cibles pour ce secteur ({{ $annee }}) :</strong><br>
-            - Moins de 1 an : <strong>{{ $ciblesParTranche['<1 an'] }}</strong> enfants |
+            - Moins de 1 an : <strong>{{ $ciblesParTranche['0-11mois'] }}</strong> enfants |
+            12 mois :<strong>{{$ciblesParTranche['12-59mois']}}</strong> enfants |
             18 mois : <strong>{{ $ciblesParTranche['18 mois'] }}</strong> enfants |
             5 ans : <strong>{{ $ciblesParTranche['5 ans'] }}</strong> enfants
         </div>
@@ -71,8 +72,9 @@
                     @foreach($tranches as $tranche => $valeurs)
                         @php
                             $trancheFormatee = $tranche;
-                            if (in_array($tranche, ['-1an', '-1 an'])) $trancheFormatee = '<1 an';
-                            elseif (in_array($tranche, ['18mois'])) $trancheFormatee = '18 mois';
+                            if (in_array($tranche, ['0-11mois', '0-11 mois'])) $trancheFormatee = '0-11mois';
+                            elseif (in_array($tranche, ['12-59mois'])) $trancheFormatee = '12-59mois';
+                            elseif (in_array($tranche, ['18 mois', '18mois'])) $trancheFormatee = '18 mois';
                             elseif (in_array($tranche, ['5ans', '5 ans'])) $trancheFormatee = '5 ans';
                             $totalVax = collect($valeurs)->sum('vaccines');
                             $cibleTranche = $ciblesParTranche[$trancheFormatee] ?? 0;

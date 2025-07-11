@@ -9,7 +9,13 @@ class EnfantStatistique extends Model
 {
     use HasFactory;
     protected $table ='enfants_statistiques';
-    protected $fillable= ['id_secteur','annee','nb_moins_1_an','nb_18_mois','nb_5_ans'];
+    protected $fillable= ['id_secteur',
+    'annee',
+    'naissances_attendues',
+    'nb_moins_1_an',
+    'nb_12_mois',
+    'nb_18_mois',
+    'nb_5_ans'];
     public function secteur(){
         return $this->belongsTo(Secteur::class, 'id_secteur');
     }
