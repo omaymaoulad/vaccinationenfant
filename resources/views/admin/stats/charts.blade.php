@@ -48,10 +48,10 @@
 <script>
 window.onload = function () {
     // Graphique 1: par vaccin / 5 dernières années
-    const vaccinParAnneeCtx = document.getElementById('vaccinParAnneeChart').getContext('2d');
-    new Chart(vaccinParAnneeCtx, {
-        type: 'bar',
-         data: {
+const vaccinParAnneeCtx = document.getElementById('vaccinParAnneeChart').getContext('2d');
+new Chart(vaccinParAnneeCtx, {
+    type: 'bar',
+    data: {
         labels: @json($annees),
         datasets: [
             @foreach($parVaccinParAnnee as $vaccin => $donnees)
@@ -59,23 +59,56 @@ window.onload = function () {
                 label: '{{ $vaccin }}',
                 data: [
                     @foreach($annees as $annee)
-                        {{ $donnees->firstWhere('annee', $annee)->total ?? 0 }},
+                        @php
+                            $data = $donnees->firstWhere('annee', $annee);
+                            $value = $data ? $data->pourcentage : 0;
+                        @endphp
+                        {{ $value }},
                     @endforeach
                 ],
+                
                 borderWidth: 1
             },
             @endforeach
         ]
     },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Pourcentage de vaccination par année'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ' + context.raw.toFixed(2) + '%';
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Pourcentage (%)'
+                },
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Années'
                 }
             }
         }
-    });
+    }
+});
 
     // Graphique 2: par semestre
     const semestreCtx = document.getElementById('semestreChart').getContext('2d');
@@ -189,7 +222,7 @@ window.onload = function () {
                         text: 'Population cible'
                     },
                     ticks: {
-                        stepSize:Math.ceil({{$totalCibles}} /10)
+                        stepSize:Math.ceil({{$totalCibles}} /12)
                     }
                 },
                 y1: {

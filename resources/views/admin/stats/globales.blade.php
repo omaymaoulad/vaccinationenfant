@@ -66,7 +66,6 @@
                 </tr>
             </thead>
             <tbody>
-               
                 @foreach($records as $vaccin => $tranches)
                     @php $first = true; $rowspan = count($tranches); @endphp
                     @foreach($tranches as $tranche => $valeurs)
