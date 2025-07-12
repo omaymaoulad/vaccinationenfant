@@ -73,50 +73,121 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 }; ?>
 
-<div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+<!-- Background avec gradient et formes flottantes -->
+<div class="gradient-bg">
+    <!-- Formes flottantes animées -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    
+    <!-- Conteneur principal -->
+    <div class="min-h-screen flex items-center justify-center px-4 relative z-10">
+        <div class="login-container fade-in">
+            
+            <!-- Logo/Brand Area -->
+            <div class="text-center mb-8">
+                <div class="logo-container">
+                    <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <div class="auth-header">
+                    <h1>{{ __('Log in to your account') }}</h1>
+                    <p>{{ __('Enter your email and password below to log in') }}</p>
+                </div>
+            </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
+            <!-- Conteneur du formulaire avec effet de verre -->
+            <div class="glass-effect p-8 slide-up">
+                <div class="flex flex-col gap-6">
+                    
+                    <!-- Session Status -->
+                    <x-auth-session-status class="success-message" :status="session('status')" />
 
-    <form wire:submit="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email address')"
-            type="email"
-            required
-            autofocus
-            autocomplete="email"
-            placeholder="email@example.com"
-        />
+                    <form wire:submit="login" class="flex flex-col gap-6">
+                        <!-- Email Address -->
+                        <div class="input-enhanced">
+                            <label for="email">{{ __('Email address') }}</label>
+                            <div class="relative">
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                </svg>
+                                <flux:input
+                                    wire:model="email"
+                                    type="email"
+                                    id="email"
+                                    required
+                                    autofocus
+                                    autocomplete="email"
+                                    placeholder="email@example.com"
+                                    class="!pl-10"
+                                />
+                            </div>
+                            @error('email')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-        <!-- Password -->
-        <div class="relative">
-            <flux:input
-                wire:model="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                :placeholder="__('Password')"
-                viewable
-            />
+                        <!-- Password -->
+                        <div class="input-enhanced">
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="password">{{ __('Password') }}</label>
+                                @if (Route::has('password.request'))
+                                    <flux:link class="forgot-password" :href="route('password.request')" wire:navigate>
+                                        {{ __('Forgot your password?') }}
+                                    </flux:link>
+                                @endif
+                            </div>
+                            <div class="relative">
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <flux:input
+                                    wire:model="password"
+                                    type="password"
+                                    id="password"
+                                    required
+                                    autocomplete="current-password"
+                                    placeholder="{{ __('Password') }}"
+                                    viewable
+                                    class="!pl-10"
+                                />
+                            </div>
+                            @error('password')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-            @if (Route::has('password.request'))
-                <flux:link class="absolute end-0 top-0 text-sm" :href="route('password.request')" wire:navigate>
-                    {{ __('Forgot your password?') }}
-                </flux:link>
-            @endif
+                        <!-- Remember Me -->
+                        <div class="checkbox-container">
+                            <flux:checkbox 
+                                wire:model="remember" 
+                                id="remember" 
+                                class="checkbox-enhanced"
+                            />
+                            <label for="remember" class="checkbox-label">{{ __('Remember me') }}</label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex items-center justify-end">
+                            <flux:button 
+                                variant="primary" 
+                                type="submit" 
+                                class="btn-primary"
+                                wire:loading.attr="disabled"
+                            >
+                                <span wire:loading.remove>{{ __('Log in') }}</span>
+                                <span wire:loading class="flex items-center gap-2">
+                                    <span class="loading"></span>
+                                    {{ __('Logging in...') }}
+                                </span>
+                            </flux:button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <!-- Remember Me -->
-        <flux:checkbox wire:model="remember" :label="__('Remember me')" />
-
-        <div class="flex items-center justify-end">
-            <flux:button variant="primary" type="submit" class="w-full">{{ __('Log in') }}</flux:button>
-        </div>
-    </form>
-
-  
+    </div>
 </div>

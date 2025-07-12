@@ -93,3 +93,4 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
     Route::get('/statistiques/charts', [ChartsController::class,'index'])->name('stats.charts');
 });
+Route::get('/dashboard/admin', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard.admin');
