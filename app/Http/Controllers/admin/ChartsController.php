@@ -56,26 +56,49 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
             ->get()
             ->groupBy('nom_vaccin');
         //mensuelle
-       $totalCibles = EnfantStatistique::where('annee', $anneeChoisie)
-            ->sum(DB::raw('COALESCE(nb_moins_1_an, 0) + COALESCE(nb_18_mois, 0) + COALESCE(nb_12_mois, 0) + COALESCE(nb_5_ans, 0)'));
-        $cibleCumul = [];
-        $vaccins = ['Penta1','Penta3','RR'];
-        $dataCumul = [];
-        for($m = 1 ; $m <= 12 ;$m++){
-            $cibleCumul[] = round(($totalCibles /12)* $m);
+       // Cible totale annuelle
+    $totalCibles = EnfantStatistique::where('annee', $anneeChoisie)
+        ->sum(DB::raw('COALESCE(nb_moins_1_an, 0) + COALESCE(nb_12_mois, 0) + COALESCE(nb_18_mois, 0) + COALESCE(nb_5_ans, 0)'));
+
+    // Cible cumulée par mois
+    $cibleCumul = [];
+    for ($m = 1; $m <= 12; $m++) {
+        $cibleCumul[] = round(($totalCibles / 12) * $m);
+    }
+
+    // Vaccins à analyser
+    $vaccins = ['Penta1', 'Penta3', 'RR'];
+    $dataCumul = [];
+    $mensuelVaccins = [];
+
+    foreach ($vaccins as $vaccin) {
+        // Regrouper les vaccinations par mois
+        $mensuel = VaccinStatistique::selectRaw("CEIL(semaine / 4) as mois, SUM(enfants_vaccines) as total")
+            ->where('nom_vaccin', $vaccin)
+            ->where('annee', $anneeChoisie)
+            ->groupBy('mois')
+            ->pluck('total', 'mois')
+            ->toArray();
+
+        // Générer les cumul mensuel
+        $cumul = 0;
+        for ($m = 1; $m <= 12; $m++) {
+            $mensuelVaccins[$vaccin][$m] = $mensuel[$m] ?? 0;
+            $cumul += $mensuelVaccins[$vaccin][$m];
+            $dataCumul[$vaccin][] = $cumul;
         }
-        foreach($vaccins as $vaccin){
-            $mensuel= VaccinStatistique::selectRaw("CEIL(semaine / 4) as mois, SUM(enfants_vaccines) as total")
-                ->where('nom_vaccin',$vaccin)
-                ->where('annee',$anneeChoisie)
-                ->groupBy('mois')
-                ->pluck('total','mois');
-            $cumul=0;
-            for($m =1; $m<= 12 ; $m++){
-                $cumul += $mensuel[$m] ?? 0;
-                $dataCumul[$vaccin][] = $cumul;
-            }
-        }
+    }
+
+    // Calcul des abandons
+    $totalPenta1 = array_sum($mensuelVaccins['Penta1']);
+    $totalPenta3 = array_sum($mensuelVaccins['Penta3']);
+    $totalRR = array_sum($mensuelVaccins['RR']);
+
+    $abandonP1P3 = $totalPenta1 - $totalPenta3;
+    $tauxAbandonP1P3 = $totalPenta1 > 0 ? round(($abandonP1P3 / $totalPenta1) * 100, 2) : 0;
+
+    $abandonP1RR = $totalPenta1 - $totalRR;
+    $tauxAbandonP1RR = $totalPenta1 > 0 ? round(($abandonP1RR / $totalPenta1) * 100, 2) : 0;
 
         return view('admin.stats.charts',[
             'anneeChoisie'=> $anneeChoisie,
@@ -83,9 +106,14 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
             'parVaccinParAnnee' => $parVaccinParAnnee,
             'parSemestre' => $parSemestre,
             'parTrimestre' =>$parTrimestre,
+            'totalCibles' => $totalCibles,
             'cibleCumul' => $cibleCumul,
-            'dataCumul' =>$dataCumul,
-            'totalCibles' => $totalCibles  
+            'dataCumul' => $dataCumul,
+            'mensuelVaccins' => $mensuelVaccins,
+            'abandonP1P3' => $abandonP1P3,
+            'tauxAbandonP1P3' => $tauxAbandonP1P3,
+            'abandonP1RR' => $abandonP1RR,
+            'tauxAbandonP1RR' => $tauxAbandonP1RR
         ]);
     }
 }

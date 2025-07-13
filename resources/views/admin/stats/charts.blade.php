@@ -40,6 +40,104 @@
         <h4>Suivi de la couverture vaccinale mensuelle - Année {{ $anneeChoisie }}</h4>
         <canvas id="couvertureChart"></canvas>
     </div>
+    <table class="table table-bordered table-striped table-hover w-max mt-3 border border-gray-300  text-center  rounded ">
+        <thead class="table-primary font-bold ">
+            <tr>
+                <th class ="px-3 py-2">Vaccin</th>
+                @for ($m = 1; $m <= 12; $m++)
+                    @php $moisNom = DateTime::createFromFormat('!m', $m)->format('M'); @endphp
+                    <th class="px-3 py-2">{{ $moisNom }}  </th>
+                    <th class="px-3 py-2">Cumul   </th>
+                @endfor
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (['Penta1', 'Penta3', 'RR'] as $vaccin)
+                <tr class="hover:bg-gray-50">
+                    <td class="font-medium bg-gray-50 px-2 py-1">{{ $vaccin }}  </td>
+                    @php $cumul = 0; @endphp
+                    @for ($m = 1; $m <= 12; $m++)
+                        @php
+                            $mensuel = $mensuelVaccins[$vaccin][$m] ?? 0;
+                            $cumul += $mensuel;
+                        @endphp
+                        <td class="px-2 py-1">{{ $mensuel }}</td>
+                        <td class="px-2 py-1 font-semibold">{{ $cumul }}</td>
+                    @endfor
+                </tr>
+            @endforeach
+
+            <!-- Ligne abandon Penta1 → Penta3 -->
+            <tr class="bg-red-50 font-semibold">
+                <td class="text-left px-2 py-1">Abandon P1 → P3</td>
+                @php $cumulP1 = $cumulP3 = 0; @endphp
+                @for ($m = 1; $m <= 12; $m++)
+                    @php
+                        $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
+                        $p3 = $mensuelVaccins['Penta3'][$m] ?? 0;
+                        $cumulP1 += $p1;
+                        $cumulP3 += $p3;
+                        $abandon = $cumulP1 - $cumulP3;
+                    @endphp
+                    <td> -</td>
+                    <td>{{ $abandon }}</td>
+                @endfor
+            </tr>
+
+            <!-- Ligne taux abandon Penta1 → Penta3 -->
+            <tr class="bg-red-100 text-sm italic">
+                <td class="text-left px-2 py-1">Taux Abandon P1 → P3</td>
+                @php $cumulP1 = $cumulP3 = 0; @endphp
+                @for ($m = 1; $m <= 12; $m++)
+                    @php
+                        $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
+                        $p3 = $mensuelVaccins['Penta3'][$m] ?? 0;
+                        $cumulP1 += $p1;
+                        $cumulP3 += $p3;
+                        $taux = $cumulP1 > 0 ? round((($cumulP1 - $cumulP3) / $cumulP1) * 100, 1) : 0;
+                    @endphp
+                    <td>-</td>
+                    <td>{{ $taux }}%</td>
+                @endfor
+            </tr>
+
+            <!-- Ligne abandon Penta1 → RR -->
+            <tr class="table-yellow-50 font-semibold">
+                <td class="text-left px-2 py-1">Abandon P1 → RR</td>
+                @php $cumulP1 = $cumulRR = 0; @endphp
+                @for ($m = 1; $m <= 12; $m++)
+                    @php
+                        $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
+                        $rr = $mensuelVaccins['RR'][$m] ?? 0;
+                        $cumulP1 += $p1;
+                        $cumulRR += $rr;
+                        $abandon = $cumulP1 - $cumulRR;
+                    @endphp
+                    <td>-</td>
+                    <td>{{ $abandon }}</td>
+                @endfor
+            </tr>
+
+            <!-- Ligne taux abandon Penta1 → RR -->
+            <tr class="bg-yellow-100 text-sm italic">
+                <td class="text-left px-2 py-1">Taux Abandon P1 → RR</td>
+                @php $cumulP1 = $cumulRR = 0; @endphp
+                @for ($m = 1; $m <= 12; $m++)
+                    @php
+                        $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
+                        $rr = $mensuelVaccins['RR'][$m] ?? 0;
+                        $cumulP1 += $p1;
+                        $cumulRR += $rr;
+                        $taux = $cumulP1 > 0 ? round((($cumulP1 - $cumulRR) / $cumulP1) * 100, 1) : 0;
+                    @endphp
+                    <td>-</td>
+                    <td>{{ $taux }}%</td>
+                @endfor
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 </div>
 @endsection
 
@@ -48,8 +146,8 @@
 <script>
 window.onload = function () {
     // Graphique 1: par vaccin / 5 dernières années
-const vaccinParAnneeCtx = document.getElementById('vaccinParAnneeChart').getContext('2d');
-new Chart(vaccinParAnneeCtx, {
+  const vaccinParAnneeCtx = document.getElementById('vaccinParAnneeChart').getContext('2d');
+  new Chart(vaccinParAnneeCtx, {
     type: 'bar',
     data: {
         labels: @json($annees),
@@ -170,44 +268,50 @@ new Chart(vaccinParAnneeCtx, {
 
     // Graphique 4: couverture vaccinale mensuelle
     const couvertureCtx = document.getElementById('couvertureChart').getContext('2d');
+     
     new Chart(couvertureCtx, {
         type: 'line',
         data: {
             labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
-            datasets: [{
-                label: '% de couverture vaccinale',
-                data: @json($cibleCumul),
-                borderColor: 'black',
-                borderWidth: 3,
-                fill: false,
-                yAxisID: 'y'
-            },
-            {
-                label: 'Penta1',
-                data: @json($dataCumul['Penta1'] ?? []),
-                borderColor: 'blue',
-                borderWidth: 2,
-                fill: false,
-                yAxisID: 'y'
-            },
-            {
-                label: 'Penta3',
-                data: @json($dataCumul['Penta3'] ?? []),
-                borderColor: 'red',
-                borderWidth: 2,
-                fill: false,
-                yAxisID: 'y'
-            },
-            {
-                label: 'RR',
-                data: @json($dataCumul['RR'] ?? []),
-                borderColor: 'green',
-                borderWidth: 2,
-                fill: false,
-                yAxisID: 'y'
-            }
-
-        ]
+            datasets: [
+                {
+                    label: 'Cible cumulée estimée',
+                    data: @json($cibleCumul),
+                    borderColor: 'black',
+                    borderWidth: 2,
+                    fill: false,
+                    pointStyle: 'rectRot',
+                    tension: 0.3,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Penta1',
+                    data: @json($dataCumul['Penta1'] ?? []),
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.3,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Penta3',
+                    data: @json($dataCumul['Penta3'] ?? []),
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.3,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'RR',
+                    data: @json($dataCumul['RR'] ?? []),
+                    borderColor: 'green',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.3,
+                    yAxisID: 'y'
+                }
+            ]
         },
         options: {
             responsive: true,

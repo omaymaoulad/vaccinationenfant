@@ -448,7 +448,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-secondary text-white">
-                    <h3 class="card-title">Répartition des Enfants Cibles</h3>
+                    <h4 class="card-title">Répartition des Enfants Cibles</h4>
                 </div>
                 <div class="card-body">
                     <canvas id="ageDistributionChart" height="150"></canvas>

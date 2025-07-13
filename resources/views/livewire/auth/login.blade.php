@@ -122,7 +122,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                                     autofocus
                                     autocomplete="email"
                                     placeholder="email@example.com"
-                                    class="!pl-10"
+                                    class="!pl-10 w-full"
                                 />
                             </div>
                             @error('email')
