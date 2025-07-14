@@ -24,4 +24,5 @@ RUN chmod -R 755 storage bootstrap/cache
 EXPOSE 8080
 
 # Commande de démarrage
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public", "server.php"]
+CMD php artisan config:cache && php artisan migrate --force && php -S 0.0.0.0:8080 -t public server.php
+
