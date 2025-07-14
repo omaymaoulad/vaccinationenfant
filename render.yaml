@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: laravel-app
+    env: php
+    plan: free
+    buildCommand: "composer install && php artisan config:clear && php artisan view:clear"
+    startCommand: "php -S 0.0.0.0:10000 -t public"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        value: base64:TBg4QY+VuGPfcfudb6TeU1zOtz/8sIX0ohXuQCgBLTk=
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        value: nom_de_ton_host
+      - key: DB_PORT
+        value: 3306
+      - key: DB_DATABASE
+        value: nom_de_ta_base
+      - key: DB_USERNAME
+        value: ton_utilisateur
+      - key: DB_PASSWORD
+        value: ton_mot_de_passe

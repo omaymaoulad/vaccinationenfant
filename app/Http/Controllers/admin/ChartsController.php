@@ -96,7 +96,6 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
 
     $abandonP1P3 = $totalPenta1 - $totalPenta3;
     $tauxAbandonP1P3 = $totalPenta1 > 0 ? round(($abandonP1P3 / $totalPenta1) * 100, 2) : 0;
-
     $abandonP1RR = $totalPenta1 - $totalRR;
     $tauxAbandonP1RR = $totalPenta1 > 0 ? round(($abandonP1RR / $totalPenta1) * 100, 2) : 0;
 
