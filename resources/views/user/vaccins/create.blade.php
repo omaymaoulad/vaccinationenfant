@@ -15,6 +15,16 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('user.vaccins.store') }}" method="POST">
                 @csrf
 
@@ -38,6 +48,12 @@
                     </div>
                 </div>
 
+                {{-- Champ pour enfants nés protégés --}}
+                <div class="mb-4">
+                    <label class="form-label">Nombre d'enfants nés protégés :</label>
+                    <input type="number" name="enfants_nes" class="form-control" placeholder="Saisir le nombre" min="0" required>
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead class="table-primary">
@@ -48,31 +64,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- Ligne spéciale pour Hep.B --}}
-                            <tr>
-                                <td><strong>Hep.B – Enfants nés</strong></td>
-                                <td>-</td>
-                                <td>
-                                    <input type="number" min="0" class="form-control" name="enfants_nes[Hep.B]" placeholder="Saisir le nombre">
-                                </td>
-                            </tr>
-
-                            {{-- Les autres vaccins avec tranche d'âge --}}
+                            {{-- Affichage de toutes les tranches pour tous les vaccins --}}
                             @foreach($vaccins as $vaccin => $tranches)
-                                @if($vaccin !== 'Hep.B')
-                                    @php $rowspan = count($tranches); @endphp
-                                    @foreach($tranches as $index => $tranche)
-                                        <tr>
-                                            @if($index == 0)
-                                                <td rowspan="{{ $rowspan }}"><strong>{{ $vaccin }}</strong></td>
-                                            @endif
-                                            <td>{{ $tranche }}</td>
-                                            <td>
-                                                <input type="number" min="0" class="form-control" name="data[{{ $vaccin }}][{{ $tranche }}]" placeholder="Saisir le nombre">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endif
+                                @php $rowspan = count($tranches); @endphp
+                                @foreach($tranches as $index => $tranche)
+                                    <tr>
+                                        @if($index === 0)
+                                            <td rowspan="{{ $rowspan }}"><strong>{{ $vaccin }}</strong></td>
+                                        @endif
+                                        <td>{{ $tranche }}</td>
+                                        <td>
+                                            <input type="number" min="0" class="form-control" name="data[{{ $vaccin }}][{{ $tranche }}]" placeholder="Saisir le nombre">
+                                        </td>
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
