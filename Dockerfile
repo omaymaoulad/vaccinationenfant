@@ -20,9 +20,8 @@ RUN composer install --optimize-autoloader --no-dev
 # Donner les bons droits d'accès
 RUN chmod -R 755 storage bootstrap/cache
 
-# Exposer le port (Render s'attend à ce que ça tourne sur $PORT)
+# Exposer le port
 EXPOSE 8080
 
-# Commande de démarrage
-CMD php artisan config:cache && php artisan migrate --force && php -S 0.0.0.0:8080 -t public server.php
-
+# ✅ Commande de démarrage sans migration automatique
+CMD php artisan config:cache && php -S 0.0.0.0:8080 -t public server.php
