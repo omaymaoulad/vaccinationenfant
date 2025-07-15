@@ -100,3 +100,6 @@ Route::get('/dashboard/admin', [App\Http\Controllers\Admin\AdminController::clas
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
     Route::get('/statistiques/zones', [zoneStatistiqueController::class,'index'])->name('stats.zones');
 });
+Route::get('/test-users', function () {
+    return \App\Models\User::all();
+});
