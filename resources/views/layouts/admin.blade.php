@@ -151,10 +151,6 @@
                 <i class="fas fa-home"></i>
                 <span>Accueil</span>
             </a>
-            <a href="{{ route('admin.stats.charts') }}" class="{{ request()->routeIs('admin.stats.charts') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i>
-                <span>Statistiques</span>
-            </a>
             <a href="{{ route('enfants.create') }}" class="{{ request()->routeIs('enfants.create') ? 'active' : '' }}">
                 <i class="fas fa-child"></i>
                 <span>Enfants par secteur</span>
@@ -162,6 +158,14 @@
             <a href="{{ route('admin.stats.globales') }}" class="{{ request()->routeIs('admin.stats.globales') ? 'active' : '' }}">
                 <i class="fas fa-syringe"></i>
                 <span>Liste de vaccination</span>
+            </a>
+            <a href="{{ route('admin.stats.zones') }}" class="{{ request()->routeIs('admin.stats.zones') ? 'active' : '' }}">
+                <i class="fas fa-syringe"></i>
+                <span>Liste de vaccination par zone</span>
+            </a>
+            <a href="{{ route('admin.stats.charts') }}" class="{{ request()->routeIs('admin.stats.charts') ? 'active' : '' }}">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistiques</span>
             </a>
             <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
                 <i class="fas fa-users"></i>

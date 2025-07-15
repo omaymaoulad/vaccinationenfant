@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('secteurs', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
-            $table->enum('zone', ['urbain', 'rural','DR']);
+            $table->enum('zone', ['urbain', 'rural']);
             $table->enum('niveau', ['1', '2']);
             // direction régionale
             $table->timestamps();

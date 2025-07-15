@@ -67,7 +67,7 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
     }
 
     // Vaccins à analyser
-    $vaccins = ['Penta1', 'Penta3', 'RR'];
+    $vaccins = ['Penta1', 'Penta3', 'RR 9mois', 'RR 18mois'];
     $dataCumul = [];
     $mensuelVaccins = [];
 
@@ -92,12 +92,15 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
     // Calcul des abandons
     $totalPenta1 = array_sum($mensuelVaccins['Penta1']);
     $totalPenta3 = array_sum($mensuelVaccins['Penta3']);
-    $totalRR = array_sum($mensuelVaccins['RR']);
+    $totalRR9 = array_sum($mensuelVaccins['RR 9mois']);
+    $totalRR18 = array_sum($mensuelVaccins['RR 18mois']);
 
     $abandonP1P3 = $totalPenta1 - $totalPenta3;
     $tauxAbandonP1P3 = $totalPenta1 > 0 ? round(($abandonP1P3 / $totalPenta1) * 100, 2) : 0;
-    $abandonP1RR = $totalPenta1 - $totalRR;
-    $tauxAbandonP1RR = $totalPenta1 > 0 ? round(($abandonP1RR / $totalPenta1) * 100, 2) : 0;
+    $abandonP1RR9 = $totalPenta1 - $totalRR9;
+    $tauxAbandonP1RR9 = $totalPenta1 > 0 ? round(($abandonP1RR9 / $totalPenta1) * 100, 2) : 0;
+    $abandonP1RR18 = $totalPenta1 - $totalRR18;
+    $tauxAbandonP1RR18 = $totalPenta1 > 0 ? round(($abandonP1RR18 / $totalPenta1) * 100, 2) : 0;
 
         return view('admin.stats.charts',[
             'anneeChoisie'=> $anneeChoisie,
@@ -111,8 +114,10 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
             'mensuelVaccins' => $mensuelVaccins,
             'abandonP1P3' => $abandonP1P3,
             'tauxAbandonP1P3' => $tauxAbandonP1P3,
-            'abandonP1RR' => $abandonP1RR,
-            'tauxAbandonP1RR' => $tauxAbandonP1RR
+            'abandonP1RR9' => $abandonP1RR9,
+            'tauxAbandonP1RR9' => $tauxAbandonP1RR9,
+            'abandonP1RR18' => $abandonP1RR18,
+            'tauxAbandonP1RR18' => $tauxAbandonP1RR18
         ]);
     }
 }

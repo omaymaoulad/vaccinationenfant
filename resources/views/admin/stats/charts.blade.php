@@ -52,7 +52,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (['Penta1', 'Penta3', 'RR'] as $vaccin)
+            @foreach (['Penta1', 'Penta3', 'RR 9mois', 'RR 18mois'] as $vaccin)
                 <tr class="hover:bg-gray-50">
                     <td class="font-medium bg-gray-50 px-2 py-1">{{ $vaccin }}  </td>
                     @php $cumul = 0; @endphp
@@ -101,14 +101,14 @@
                 @endfor
             </tr>
 
-            <!-- Ligne abandon Penta1 → RR -->
+            <!-- Ligne abandon Penta1 → RR9 -->
             <tr class="table-yellow-50 font-semibold">
-                <td class="text-left px-2 py-1">Abandon P1 → RR</td>
+                <td class="text-left px-2 py-1">Abandon P1 → RR 9mois</td>
                 @php $cumulP1 = $cumulRR = 0; @endphp
                 @for ($m = 1; $m <= 12; $m++)
                     @php
                         $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
-                        $rr = $mensuelVaccins['RR'][$m] ?? 0;
+                        $rr = $mensuelVaccins['RR 9mois'][$m] ?? 0;
                         $cumulP1 += $p1;
                         $cumulRR += $rr;
                         $abandon = $cumulP1 - $cumulRR;
@@ -118,17 +118,49 @@
                 @endfor
             </tr>
 
-            <!-- Ligne taux abandon Penta1 → RR -->
+            <!-- Ligne taux abandon Penta1 → RR 9mois -->
             <tr class="bg-yellow-100 text-sm italic">
                 <td class="text-left px-2 py-1">Taux Abandon P1 → RR</td>
                 @php $cumulP1 = $cumulRR = 0; @endphp
                 @for ($m = 1; $m <= 12; $m++)
                     @php
                         $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
-                        $rr = $mensuelVaccins['RR'][$m] ?? 0;
+                        $rr = $mensuelVaccins['RR 9mois'][$m] ?? 0;
                         $cumulP1 += $p1;
                         $cumulRR += $rr;
                         $taux = $cumulP1 > 0 ? round((($cumulP1 - $cumulRR) / $cumulP1) * 100, 1) : 0;
+                    @endphp
+                    <td>-</td>
+                    <td>{{ $taux }}%</td>
+                @endfor
+            </tr>
+            <!-- Ligne abandon Penta1 → RR18 -->
+            <tr class="table-yellow-50 font-semibold">
+                <td class="text-left px-2 py-1">Abandon P1 → RR 9mois</td>
+                @php $cumulP1 = $cumulRR18 = 0; @endphp
+                @for ($m = 1; $m <= 12; $m++)
+                    @php
+                        $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
+                        $rr1 = $mensuelVaccins['RR 18mois'][$m] ?? 0;
+                        $cumulP1 += $p1;
+                        $cumulRR18 += $rr1;
+                        $abandon = $cumulP1 - $cumulRR18;
+                    @endphp
+                    <td>-</td>
+                    <td>{{ $abandon }}</td>
+                @endfor
+            </tr>
+            <!-- Ligne taux abandon Penta1 → RR 18mois -->
+            <tr class="bg-yellow-100 text-sm italic">
+                <td class="text-left px-2 py-1">Taux Abandon P1 → RR 18mois</td>
+                @php $cumulP1 = $cumulRR18 = 0; @endphp
+                @for ($m = 1; $m <= 12; $m++)
+                    @php
+                        $p1 = $mensuelVaccins['Penta1'][$m] ?? 0;
+                        $rr1 = $mensuelVaccins['RR 18mois'][$m] ?? 0;
+                        $cumulP1 += $p1;
+                        $cumulRR18 += $rr1;
+                        $taux = $cumulP1 > 0 ? round((($cumulP1 - $cumulRR18) / $cumulP1) * 100, 1) : 0;
                     @endphp
                     <td>-</td>
                     <td>{{ $taux }}%</td>
@@ -303,13 +335,22 @@ window.onload = function () {
                     yAxisID: 'y'
                 },
                 {
-                    label: 'RR',
-                    data: @json($dataCumul['RR'] ?? []),
+                    label: 'RR 9mois',
+                    data: @json($dataCumul['RR 9mois'] ?? []),
                     borderColor: 'green',
                     borderWidth: 2,
                     fill: false,
                     tension: 0.3,
                     yAxisID: 'y'
+                },
+                {
+                   label: 'RR 18mois',
+                    data: @json($dataCumul['RR 18mois'] ?? []),
+                    borderColor: 'yellow',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.3,
+                    yAxisID: 'y' 
                 }
             ]
         },

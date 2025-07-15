@@ -13,6 +13,8 @@ use App\Http\Controllers\User\VaccinStatistiqueController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\Admin\AdminStatistiqueController;
 use App\Http\Controllers\Admin\ChartsController;
+use App\Http\Controllers\Admin\zoneStatistiqueController;
+
 require __DIR__.'/auth.php';
 
 // Route d'accueil redirige vers le bon dashboard selon le rôle
@@ -94,3 +96,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
     Route::get('/statistiques/charts', [ChartsController::class,'index'])->name('stats.charts');
 });
 Route::get('/dashboard/admin', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard.admin');
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
+    Route::get('/statistiques/zones', [zoneStatistiqueController::class,'index'])->name('stats.zones');
+});
