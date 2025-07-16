@@ -49,9 +49,10 @@
         </div>
     @endif
 
-    @if(empty($records))
-        <div class="alert alert-warning">Aucune donnée disponible.</div>
-    @else
+    @if(request()->has('annee') || request()->has('secteur') || request()->has('mode'))
+        @if(empty($records))
+            <div class="alert alert-warning">Aucune donnée disponible.</div>
+        @else
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">
                 <tr>
@@ -97,6 +98,7 @@
                 @endforeach
             </tbody>
         </table>
+        @endif
     @endif
 </div>
 @endsection
