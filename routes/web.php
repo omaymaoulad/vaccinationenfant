@@ -14,8 +14,7 @@ use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\Admin\AdminStatistiqueController;
 use App\Http\Controllers\Admin\ChartsController;
 use App\Http\Controllers\Admin\zoneStatistiqueController;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+
 
 
 require __DIR__.'/auth.php';
@@ -105,15 +104,4 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
 });
 Route::get('/test-users', function () {
     return \App\Models\User::all();
-});
-Route::get('/fix-password-admin', function () {
-    $user = User::where('email', 'admin@gmail.com')->first();
-
-    if ($user) {
-        $user->password = Hash::make('admin123456'); // nouveau mot de passe
-        $user->save();
-        return 'Mot de passe mis à jour avec succès';
-    }
-
-    return 'Utilisateur non trouvé';
 });
