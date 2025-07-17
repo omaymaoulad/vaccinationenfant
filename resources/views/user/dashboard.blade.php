@@ -424,13 +424,13 @@
         <div class="history-section animate-fade-in">
             <div class="history-header">
                 <i class="fas fa-chart-bar me-2"></i>
-                Pourcentage de vaccination par tranche d'âge (5 dernières semaines)
+                Pourcentage de vaccination par tranche d'âge 
             </div>
             <div class="table-responsive">
                 <table class="table history-table">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-calendar-alt me-2"></i>Semaine</th>
+                            <th><i class="fas fa-calendar-alt me-2"></i>mois</th>
                             <th><i class="fas fa-baby me-2"></i>-1 an (%)</th>
                             <th><i class="fas fa-child me-2"></i>12 mois (%)</th>
                             <th><i class="fas fa-child me-2"></i>18 mois (%)</th>
@@ -440,7 +440,7 @@
                     <tbody>
                         @foreach($historiqueParAge as $item)
                             <tr>
-                                <td><strong>{{ $item->semaine }}</strong></td>
+                                <td><strong>{{ $item->mois }}</strong></td>
                                 <td>
                                     <span class="badge badge-sm" style="background: {{ $item->cibles_m1 ? (($item->vaccines_m1 / $item->cibles_m1 * 100) >= 80 ? 'var(--success-color)' : (($item->vaccines_m1 / $item->cibles_m1 * 100) >= 50 ? 'var(--warning-color)' : 'var(--danger-color)')) : 'var(--secondary-color)' }}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px;">
                                         {{ $item->cibles_m1 ? round($item->vaccines_m1 / $item->cibles_m1 * 100, 1) : 0 }}%

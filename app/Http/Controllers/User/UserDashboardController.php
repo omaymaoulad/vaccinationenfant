@@ -27,7 +27,7 @@ class UserDashboardController extends Controller
         // Historique des 5 dernières semaines
         $historiqueParAge = VaccinStatistique::where('id_secteur', $secteur->id)
                                 ->where('annee', $annee)
-                                ->select(['semaine',
+                                ->select(['mois',
         DB::raw("SUM(CASE WHEN tranche_age = '0-11mois' THEN enfants_vaccines ELSE 0 END) as vaccines_m1"),
         DB::raw("SUM(CASE WHEN tranche_age = '12-59mois' THEN enfants_vaccines ELSE 0 END) as vaccines_12"),
         DB::raw("SUM(CASE WHEN tranche_age = '18mois' THEN enfants_vaccines ELSE 0 END) as vaccines_18"),
@@ -38,9 +38,8 @@ class UserDashboardController extends Controller
         DB::raw("SUM(CASE WHEN tranche_age = '18mois' THEN enfants_cibles ELSE 0 END) as cibles_18"),
         DB::raw("SUM(CASE WHEN tranche_age = '5ans' THEN enfants_cibles ELSE 0 END) as cibles_5"),
     ])
-        ->groupBy('semaine')
-        ->orderByDesc('semaine')
-        ->take(5)
+        ->groupBy('mois')
+        ->orderByDesc('mois')
         ->get();
 
         $annee = request('annee') ?? date('Y');

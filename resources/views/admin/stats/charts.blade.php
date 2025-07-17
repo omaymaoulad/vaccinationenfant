@@ -19,7 +19,7 @@
 
     <!--  Vaccinés par vaccin sur 5 ans -->
     <div class="mb-5">
-        <h4>Vaccinés par vaccin (5 dernières années)</h4>
+        <h4>Vaccinés par vaccin (5 années)</h4>
         <canvas id="vaccinParAnneeChart"></canvas>
     </div>
 

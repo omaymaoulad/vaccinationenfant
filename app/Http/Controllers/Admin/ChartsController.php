@@ -36,22 +36,24 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
         $parSemestre = VaccinStatistique::selectRaw("
                 nom_vaccin,
                 CASE
-                    WHEN semaine <= 26 THEN 'Semestre 1'
+                    WHEN mois <= 6 THEN 'Semestre 1'
                     ELSE 'Semestre 2'
                 END AS semestre,
                 SUM(enfants_vaccines) AS total
             ")
             ->where('annee' , $anneeChoisie)
+            ->whereNotNull('mois')
             ->groupBy('nom_vaccin', 'semestre')
             ->get()
             ->groupBy('nom_vaccin');
         //par trimestre
         $parTrimestre = VaccinStatistique::selectRaw("
                 nom_vaccin,
-                FLOOR((semaine-1)/13)+1 as trimestre,
+                FLOOR((mois-1)/3)+1 as trimestre,
                 SUM(enfants_vaccines) as total
             ")
             ->where('annee' , $anneeChoisie)
+            ->whereNotNull('mois')
             ->groupBy('nom_vaccin', 'trimestre')
             ->get()
             ->groupBy('nom_vaccin');
@@ -73,7 +75,7 @@ $parVaccinParAnnee = $data->map(function ($item) use ($totauxParAnnee) {
 
     foreach ($vaccins as $vaccin) {
         // Regrouper les vaccinations par mois
-        $mensuel = VaccinStatistique::selectRaw("CEIL(semaine / 4) as mois, SUM(enfants_vaccines) as total")
+        $mensuel = VaccinStatistique::selectRaw("mois, SUM(enfants_vaccines) as total")
             ->where('nom_vaccin', $vaccin)
             ->where('annee', $anneeChoisie)
             ->groupBy('mois')

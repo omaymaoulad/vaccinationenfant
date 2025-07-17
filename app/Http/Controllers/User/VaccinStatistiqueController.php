@@ -37,10 +37,19 @@ class VaccinStatistiqueController extends Controller
 
     public function store(Request $request)
     {
+    $request->validate([
+        'mode' => 'required|in:semaine,mois',
+        'semaine' => 'required_if:mode,semaine|nullable|integer|min:1|max:52',
+        'mois' => 'required_if:mode,mois|nullable|integer|min:1|max:12',
+        'annee' => 'required|integer',
+        'enfants_nes' => 'nullable|integer|min:0',
+    ]);
     $user = Auth::user();
     $secteurId = $user->secteur->id;
     $annee = $request->annee;
-    $semaine = $request->semaine;
+    $mode = $request->mode;
+    $semaine = $mode === 'semaine' ? $request->semaine : null;
+    $mois = $mode === 'mois' ? $request->mois : null;
     $enfantsNes = $request->input('enfants_nes');
     $penta1Total = 0;
     $totalHepB = 0;
@@ -73,6 +82,7 @@ class VaccinStatistiqueController extends Controller
                     'id_secteur' => $secteurId,
                     'annee' => $annee,
                     'semaine' => $semaine,
+                    'mois' => $mois,
                     'nom_vaccin' => 'Hep.B',
                     'tranche_age' => $tranche,
                     'enfants_cibles' => 0,
@@ -94,11 +104,12 @@ class VaccinStatistiqueController extends Controller
                 $exists = VaccinStatistique::where([
                     'id_secteur' => $secteurId,
                     'annee' => $annee,
-                    'semaine' => $semaine,
                     'nom_vaccin' => $vaccin,
                     'tranche_age' => $tranche,
-                ])->exists();
-
+                ])
+                ->when($mode === 'semaine', fn($q) => $q->where('semaine', $semaine))
+                ->when($mode === 'mois', fn($q) => $q->where('mois', $mois))
+                ->exists();
                 if ($exists) continue;
 
             // Récupérer les enfants cibles
@@ -119,6 +130,7 @@ class VaccinStatistiqueController extends Controller
                 'id_secteur' => $secteurId,
                 'annee' => $annee,
                 'semaine' => $semaine,
+                'mois' => $mois,
                 'nom_vaccin' => $vaccin,
                 'tranche_age' => $tranche,
                 'enfants_cibles' => $cibles,

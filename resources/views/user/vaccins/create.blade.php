@@ -38,11 +38,28 @@
                         </select>
                     </div>
                     
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label class="form-label">Mode de saisie :</label>
+                        <select name="mode" id="mode-select" class="form-select" required onchange="toggleModeFields()">
+                            <option value="semaine" selected>Saisie par semaine</option>
+                            <option value="mois">Saisie par mois</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4" id="semaine-field">
                         <label class="form-label">Semaine :</label>
-                        <select name="semaine" class="form-select" required>
+                        <select name="semaine" id="semaine" class="form-select">
                             @for($i = 1; $i <= 52; $i++)
                                 <option value="{{ $i }}">Semaine {{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div class="col-md-4" id="mois-field" style="display: none;">
+                        <label class="form-label">Mois :</label>
+                        <select name="mois" id="mois" class="form-select">
+                            @for($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}">Mois {{ $i }}</option>
                             @endfor
                         </select>
                     </div>
@@ -92,4 +109,33 @@
         </div>
     </div>
 </div>
+<script>
+    function toggleModeFields() {
+        const mode = document.getElementById('mode-select').value;
+
+        const semaineField = document.getElementById('semaine-field');
+        const moisField = document.getElementById('mois-field');
+
+        const semaineInput = document.querySelector('[name="semaine"]');
+        const moisInput = document.querySelector('[name="mois"]');
+
+        if (mode === 'semaine') {
+            semaineField.style.display = 'block';
+            semaineInput.disabled = false;
+
+            moisField.style.display = 'none';
+            moisInput.disabled = true;
+        } else if (mode === 'mois') {
+            moisField.style.display = 'block';
+            moisInput.disabled = false;
+
+            semaineField.style.display = 'none';
+            semaineInput.disabled = true;
+        }
+    }
+
+    // Appelle la fonction au chargement pour initialiser correctement les champs
+    document.addEventListener('DOMContentLoaded', toggleModeFields);
+</script>
+
 @endsection

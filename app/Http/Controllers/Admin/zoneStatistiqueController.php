@@ -76,7 +76,7 @@ class ZoneStatistiqueController extends Controller
 
                 // Données mensuelles
                 foreach ($items as $item) {
-                    $mois = ceil($item->semaine / 4);
+                    $mois = $item->mois;
                     if ($mois >= 1 && $mois <= 12) {
                         $moisData[$mois]['vaccines'] += $item->enfants_vaccines;
                         $moisData[$mois]['cibles'] += $item->enfants_cibles;

@@ -28,7 +28,7 @@ class AdminStatistiqueController extends Controller
     foreach ($data as $row) {
     $vaccin = $row->nom_vaccin;
     $tranche = $row->tranche_age;
-    $cleCol = $mode === 'mois' ? ceil($row->semaine / 4) : $row->semaine;
+    $cleCol = $mode === 'mois' ? $row->mois : $row->semaine;
 
     if (!isset($records[$vaccin][$tranche])) {
         $records[$vaccin][$tranche] = array_fill_keys($colonnes, ['vaccines' => 0, 'cibles' => 0]);
