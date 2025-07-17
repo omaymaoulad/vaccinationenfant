@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin\zoneStatistiqueController;
 
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Artisan;
 require __DIR__.'/auth.php';
 
 // Route d'accueil redirige vers le bon dashboard selon le rôle
@@ -105,4 +105,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
 });
 Route::get('/test-users', function () {
     return \App\Models\User::all();
+});
+Route::get('/migrate-run', function () {
+    Artisan::call('migrate');
+    return '✅ Migration exécutée avec succès.';
 });
