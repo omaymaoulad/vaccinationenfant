@@ -106,7 +106,4 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
 Route::get('/test-users', function () {
     return \App\Models\User::all();
 });
-Route::get('/migrate-run', function () {
-    Artisan::call('migrate');
-    return '✅ Migration exécutée avec succès.';
-});
+

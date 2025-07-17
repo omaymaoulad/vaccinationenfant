@@ -20,8 +20,8 @@ RUN composer install --optimize-autoloader --no-dev
 # Donner les bons droits d'accès
 RUN chmod -R 755 storage bootstrap/cache
 
-# Exposer le port
-EXPOSE 8080
+# Exposer le port requis par Render (⚠️ 10000 obligatoire)
+EXPOSE 10000
 
-# ✅ Commande de démarrage sans migration automatique
-CMD php artisan config:cache && php -S 0.0.0.0:8080 -t public server.php
+# ✅ Lancer Laravel avec le serveur Artisan sur le bon port
+CMD php artisan config:cache && php artisan serve --host=0.0.0.0 --port=10000
