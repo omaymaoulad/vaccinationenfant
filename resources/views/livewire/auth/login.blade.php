@@ -177,7 +177,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                                 type="submit" 
                                 class="btn-primary"
                                 wire:loading.attr="disabled"
-                            >
+                            >    
                                 <span wire:loading.remove>{{ __('Log in') }}</span>
                                 <span wire:loading class="flex items-center gap-2">
                                     <span class="loading"></span>

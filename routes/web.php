@@ -15,7 +15,8 @@ use App\Http\Controllers\Admin\AdminStatistiqueController;
 use App\Http\Controllers\Admin\ChartsController;
 use App\Http\Controllers\Admin\zoneStatistiqueController;
 
-
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 require __DIR__.'/auth.php';
 
@@ -104,4 +105,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function(){
 });
 Route::get('/test-users', function () {
     return \App\Models\User::all();
+});
+Route::get('/reset-user-password', function () {
+    $user = User::where('email', 'user1@gmail.com')->first();
+    $user->password = Hash::make('user123456');
+    $user->save();
+    return 'Mot de passe réinitialisé.';
 });
