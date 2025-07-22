@@ -86,6 +86,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/vaccins/create', [VaccinStatistiqueController::class, 'create'])->name('user.vaccins.create');
     Route::post('/user/vaccins/store', [VaccinStatistiqueController::class, 'store'])->name('user.vaccins.store');
+    Route::get('/vaccins/duplicate', [VaccinStatistiqueController::class, 'duplicateLastEntry'])->name('user.vaccins.duplicate');
+
 });
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile');

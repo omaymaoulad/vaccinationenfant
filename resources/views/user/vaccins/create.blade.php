@@ -8,14 +8,18 @@
         </div>
         
         <div class="card-body">
+            @if($errors->has('duplicate'))
+                <div class="alert alert-danger">
+                    {{ $errors->first('duplicate') }}
+                </div>
+            @endif
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
-
-            @if($errors->any())
+            @if($errors->any() && !$errors->has('duplicate'))
                 <div class="alert alert-danger">
                     <ul class="mb-0">
                         @foreach($errors->all() as $error)
@@ -24,6 +28,13 @@
                     </ul>
                 </div>
             @endif
+            <form method="GET" action="{{ route('user.vaccins.duplicate') }}" class="mb-3">
+                <input type="hidden" name="mode" id="duplication-mode">
+                <input type="hidden" name="semaine" id="duplication-semaine">
+                <input type="hidden" name="mois" id="duplication-mois">
+                <input type="hidden" name="annee" value="{{ old('annee', $annee ?? date('Y')) }}">
+                <button type="submit" class="btn btn-success" onclick="syncDuplicationFields()">Dupliquer la saisie précédente</button>
+            </form>
 
             <form action="{{ route('user.vaccins.store') }}" method="POST">
                 @csrf
@@ -33,7 +44,7 @@
                         <label class="form-label">Année :</label>
                         <select name="annee" class="form-select" required>
                             @foreach($annees as $a)
-                                <option value="{{ $a }}">{{ $a }}</option>
+                                <option value="{{ $a }}" {{ (old('annee', $annee ?? '') == $a) ? 'selected' : '' }}>{{ $a }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -41,8 +52,8 @@
                     <div class="col-md-4">
                         <label class="form-label">Mode de saisie :</label>
                         <select name="mode" id="mode-select" class="form-select" required onchange="toggleModeFields()">
-                            <option value="semaine" selected>Saisie par semaine</option>
-                            <option value="mois">Saisie par mois</option>
+                            <option value="semaine" {{ old('mode', $mode ?? '') == 'semaine' ? 'selected' : '' }}>Saisie par semaine</option>
+                            <option value="mois" {{ old('mode', $mode ?? '') == 'mois' ? 'selected' : '' }}>Saisie par mois</option>
                         </select>
                     </div>
 
@@ -50,7 +61,7 @@
                         <label class="form-label">Semaine :</label>
                         <select name="semaine" id="semaine" class="form-select">
                             @for($i = 1; $i <= 52; $i++)
-                                <option value="{{ $i }}">Semaine {{ $i }}</option>
+                                <option value="{{ $i }}" {{ old('semaine', $semaine ?? 1) == $i ? 'selected' : '' }}>Semaine {{ $i }}</option>
                             @endfor
                         </select>
                     </div>
@@ -59,7 +70,7 @@
                         <label class="form-label">Mois :</label>
                         <select name="mois" id="mois" class="form-select">
                             @for($i = 1; $i <= 12; $i++)
-                                <option value="{{ $i }}">Mois {{ $i }}</option>
+                                <option value="{{ $i }}" {{ old('mois', $mois ?? 1) == $i ? 'selected' : '' }}>Mois {{ $i }}</option>
                             @endfor
                         </select>
                     </div>
@@ -91,7 +102,7 @@
                                         @endif
                                         <td>{{ $tranche }}</td>
                                         <td>
-                                            <input type="number" min="0" class="form-control" name="data[{{ $vaccin }}][{{ $tranche }}]" placeholder="Saisir le nombre">
+                                            <input type="number" min="0" class="form-control" name="data[{{ $vaccin }}][{{ $tranche }}]" value="{{ old("data.$vaccin.$tranche", $data[$vaccin][$tranche] ?? '') }}" placeholder="Saisir le nombre">
                                         </td>
                                     </tr>
                                 @endforeach
@@ -136,6 +147,15 @@
 
     // Appelle la fonction au chargement pour initialiser correctement les champs
     document.addEventListener('DOMContentLoaded', toggleModeFields);
+    function syncDuplicationFields() {
+    const mode = document.getElementById('mode-select').value;
+    const semaine = document.getElementById('semaine').value;
+    const mois = document.getElementById('mois').value;
+
+    document.getElementById('duplication-mode').value = mode;
+    document.getElementById('duplication-semaine').value = semaine;
+    document.getElementById('duplication-mois').value = mois;
+}
 </script>
 
 @endsection
