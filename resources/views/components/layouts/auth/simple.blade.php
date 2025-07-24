@@ -24,7 +24,7 @@ html, body {
 
 /* Background Principal */
 .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #397fda 100%);
     min-height: 100vh;
     position: relative;
     overflow: hidden;
@@ -132,27 +132,22 @@ html, body {
 
 /* Logo et Header */
 .logo-container {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    margin: 0 auto 1.5rem;
-    transition: all 0.3s ease;
-}
 
+    margin: 2rem auto;
+    transition: transform 0.3s ease;
+}
 .logo-container:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    transform: scale(1.05);
+}
+.logo-container img {
+    width: 50%;
+    height:50%;
+    object-fit: contain;
 }
 
-.logo-container svg {
-    color: white;
-}
 
 .auth-header h1 {
     font-size: 1.875rem;

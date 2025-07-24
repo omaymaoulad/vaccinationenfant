@@ -89,9 +89,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             <!-- Logo/Brand Area -->
             <div class="text-center mb-8">
                 <div class="logo-container">
-                    <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
+                    <img src="{{ asset('images/logo1.jpg') }}" width = "80%" height="80%">
                 </div>
                 <div class="auth-header">
                     <h1>{{ __('Log in to your account') }}</h1>
@@ -178,7 +176,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                                 class="btn-primary"
                                 wire:loading.attr="disabled"
                             >    
-                                <span wire:loading.remove>{{ __('Log in') }}</span>
+                                <span wire:loading.remove.delay>{{ __('Log in') }}</span>
                                 <span wire:loading class="flex items-center gap-2">
                                     <span class="loading"></span>
                                     {{ __('Logging in...') }}
