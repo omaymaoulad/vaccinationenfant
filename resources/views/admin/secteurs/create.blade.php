@@ -22,7 +22,6 @@
             <select name="zone" class="form-select" required>
                 <option value="urbain">Urbain</option>
                 <option value="rural">Rural</option>
-                <option value="DR">DR</option>
             </select>
         </div>
 
