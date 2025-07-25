@@ -321,7 +321,7 @@
                     </div>
                     <div class="stat-card-title">Vaccinés cette semaine</div>
                     <h3 class="stat-card-value">{{ $cetteSemaine }}</h3>
-                    <div class="stat-card-label">Semaine {{ $currentSemaine }}</div>
+                    <div class="stat-card-label">Mois {{ $currentSemaine }}</div>
                 </div>
             </div>
 

@@ -89,55 +89,50 @@ class VaccinStatistiqueController extends Controller
 
 
     public function store(Request $request)
-    {
-        $request->validate([
-           'mode' => 'required|in:semaine,mois',
-           'semaine' => 'required_if:mode,semaine|nullable|integer|min:1|max:52',
-           'mois' => 'required_if:mode,mois|nullable|integer|min:1|max:12',
-           'annee' => 'required|integer',
-           'enfants_nes' => 'nullable|integer|min:0',
-        ]);
-        $user = Auth::user();
-        $secteurId = $user->secteur->id;
-        $annee = $request->annee;
-        $mode = $request->mode;
-        $semaine = $mode === 'semaine' ? $request->semaine : null;
-        $mois = $mode === 'mois' ? $request->mois : null;
-        $enfantsNes = $request->input('enfants_nes');
-        $penta1Total = 0;
-        $totalHepB = 0;
-        if (!empty($request->data['Penta1'])) {
-            foreach ($request->data['Penta1'] as $nb) {
-                $penta1Total += (int) $nb;
-            }
-        }
-      // Récupérer les données Hep.B
-        if (!empty($request->data['Hep.B'])) {
-            foreach ($request->data['Hep.B'] as $tranche => $nombre) {
-                if ($nombre === null || $nombre === '') continue;
-                $totalHepB += (int)$nombre;
-            }
-        }
+{
+    $request->validate([
+        'mode' => 'required|in:semaine,mois',
+        'semaine' => 'required_if:mode,semaine|nullable|integer|min:1|max:52',
+        'mois' => 'required_if:mode,mois|nullable|integer|min:1|max:12',
+        'annee' => 'required|integer',
+        'enfants_nes' => 'nullable|integer|min:0',
+    ]);
 
-        // Validation: enfants nés protégés >= max(Penta1, Hep.B)
-        if ($enfantsNes !== null && $enfantsNes > $penta1Total) {
-            return redirect()->back()->withErrors([
-                'enfants_nes' => "Le nombre d'enfants nés protégés ne peut pas être supérieur au nombre de vaccinés par Penta1 .",
-            ]);
+    $user = Auth::user();
+    $secteurId = $user->secteur->id;
+    $annee = $request->annee;
+    $mode = $request->mode;
+    $semaine = $mode === 'semaine' ? $request->semaine : null;
+    $mois = $mode === 'mois' ? $request->mois : null;
+    $enfantsNes = $request->input('enfants_nes');
+
+    $penta1Total = 0;
+    if (!empty($request->data['Penta1'])) {
+        foreach ($request->data['Penta1'] as $nb) {
+            $penta1Total += (int)$nb;
         }
-        if (!empty($request->data['Hep.B'])) {
-            foreach ($request->data['Hep.B'] as $tranche => $nombre) {
-                if ($nombre === null || $nombre === '') continue;
-                $record = VaccinStatistique::where([
-                    'id_secteur' => $secteurId,
-                    'annee' => $annee,
-                    'nom_vaccin' => 'Hep.B',
-                    'tranche_age' => $tranche,
-                ])
-                ->when($mode === 'semaine', fn($q) => $q->where('semaine', $semaine))
-                ->when($mode === 'mois', fn($q) => $q->where('mois', $mois))
-                ->first();
-                $dataToSave = [
+    }
+
+    $totalHepB = 0;
+    if (!empty($request->data['Hep.B'])) {
+        foreach ($request->data['Hep.B'] as $tranche => $nombre) {
+            if ($nombre === null || $nombre === '') continue;
+            $totalHepB += (int)$nombre;
+        }
+    }
+
+    if ($enfantsNes !== null && $enfantsNes > $penta1Total) {
+        return redirect()->back()->withErrors([
+            'enfants_nes' => "Le nombre d'enfants nés protégés ne peut pas être supérieur au nombre de vaccinés par Penta1.",
+        ]);
+    }
+
+    // 🔹 Enregistrement des données Hep.B
+    if (!empty($request->data['Hep.B'])) {
+        foreach ($request->data['Hep.B'] as $tranche => $nombre) {
+            if ($nombre === null || $nombre === '') continue;
+
+            VaccinStatistique::create([
                 'id_secteur' => $secteurId,
                 'annee' => $annee,
                 'semaine' => $semaine,
@@ -148,60 +143,46 @@ class VaccinStatistiqueController extends Controller
                 'enfants_vaccines' => $nombre,
                 'enfants_nes' => null,
                 'pourcentage_vaccination' => 0,
-                ];
-                if ($record) {
-                    $record->update($dataToSave);
-                } else {
-                    VaccinStatistique::create($dataToSave);
-                }
-            }
-        }
-        foreach ($request->data as $vaccin => $tranches) {
-            if ($vaccin == 'Hep.B') continue; // Déjà traité ci-dessus
-
-            foreach ($tranches as $tranche => $vaccines) {
-                if ($vaccines === null || $vaccines === '') continue;
-
-                // Vérifier s'il existe déjà
-                $stats = EnfantStatistique::where([
-                    'id_secteur' => $secteurId,
-                    'annee' => $annee,
-                ])->first();
-                $colMap = [
-                    '0-11mois' => 'nb_moins_1_an',
-                    '12-59mois' => 'nb_12_mois',
-                    '18mois' => 'nb_18_mois',
-                    '5ans' => 'nb_5_ans'
-                ];
-                $cibles = ($stats && isset($colMap[$tranche])) ? ($stats->{$colMap[$tranche]} ?? 0) : 0;
-                $dataToSave = [
-                    'id_secteur' => $secteurId,
-                    'annee' => $annee,
-                    'semaine' => $semaine,
-                    'mois' => $mois,
-                    'nom_vaccin' => $vaccin,
-                    'tranche_age' => $tranche,
-                    'enfants_cibles' => $cibles,
-                    'enfants_vaccines' => $vaccines,
-                    'enfants_nes' => $enfantsNes,
-                    'pourcentage_vaccination' => $cibles > 0 ? round(($vaccines / $cibles) * 100, 2) : 0,
-                ];
-                $record = VaccinStatistique::where([
-                    'id_secteur' => $secteurId,
-                    'annee' => $annee,
-                    'nom_vaccin' => $vaccin,
-                    'tranche_age' => $tranche,
-                ])
-                ->when($mode === 'semaine', fn($q) => $q->where('semaine', $semaine))
-                ->when($mode === 'mois', fn($q) => $q->where('mois', $mois))
-                ->first();
-                if ($record) {
-                    $record->update($dataToSave);
-                } else {
-                    VaccinStatistique::create($dataToSave);
-                }
-            }
-            return redirect()->back()->with('success', 'Données enregistrées avec succès.');
+            ]);
         }
     }
+
+    // 🔹 Enregistrement des autres vaccins
+    foreach ($request->data as $vaccin => $tranches) {
+        if ($vaccin == 'Hep.B') continue;
+
+        foreach ($tranches as $tranche => $vaccines) {
+            if ($vaccines === null || $vaccines === '') continue;
+
+            $stats = EnfantStatistique::where([
+                'id_secteur' => $secteurId,
+                'annee' => $annee,
+            ])->first();
+
+            $colMap = [
+                '0-11mois' => 'nb_moins_1_an',
+                '12-59mois' => 'nb_12_mois',
+                '18mois' => 'nb_18_mois',
+                '5ans' => 'nb_5_ans'
+            ];
+            $cibles = ($stats && isset($colMap[$tranche])) ? ($stats->{$colMap[$tranche]} ?? 0) : 0;
+
+            VaccinStatistique::create([
+                'id_secteur' => $secteurId,
+                'annee' => $annee,
+                'semaine' => $semaine,
+                'mois' => $mois,
+                'nom_vaccin' => $vaccin,
+                'tranche_age' => $tranche,
+                'enfants_cibles' => $cibles,
+                'enfants_vaccines' => $vaccines,
+                'enfants_nes' => $enfantsNes,
+                'pourcentage_vaccination' => $cibles > 0 ? round(($vaccines / $cibles) * 100, 2) : 0,
+            ]);
+        }
+    }
+
+    return redirect()->back()->with('success', 'Données enregistrées avec succès.');
+}
+
 }

@@ -16,12 +16,12 @@ class UserDashboardController extends Controller
 
         // Dernière semaine enregistrée
         $currentSemaine = VaccinStatistique::where('id_secteur', $secteur->id)
-                            ->latest('semaine')
-                            ->value('semaine');
+                            ->latest('mois')
+                            ->value('mois');
 
         // Nombre d’enfants vaccinés cette semaine
         $cetteSemaine = VaccinStatistique::where('id_secteur', $secteur->id)
-                            ->where('semaine', $currentSemaine)
+                            ->where('mois', $currentSemaine)
                             ->sum('enfants_vaccines');
         $annee = request('annee') ?? date('Y');
         // Historique des 5 dernières semaines
