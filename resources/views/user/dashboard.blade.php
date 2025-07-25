@@ -319,7 +319,7 @@
                     <div class="stat-card-icon">
                         <i class="fas fa-syringe"></i>
                     </div>
-                    <div class="stat-card-title">Vaccinés cette semaine</div>
+                    <div class="stat-card-title">Vaccinés ce mois</div>
                     <h3 class="stat-card-value">{{ $cetteSemaine }}</h3>
                     <div class="stat-card-label">Mois {{ $currentSemaine }}</div>
                 </div>
